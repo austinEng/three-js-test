@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <style>
+      html, body {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="1000" height="1000"></canvas>
+    <script>
+      const stats = new Stats();
+      stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+      document.body.appendChild(stats.domElement);
+      stats.domElement.style.position = "absolute";
+      stats.domElement.style.top = "5px";
+      stats.domElement.style.left = "5px";
+
+      const canvas = document.querySelector('canvas');
+
+      //Declare three.js variables
+      var camera, scene, renderer
+
+      //assign three.js objects to each variable
+      function init(){
+
+        //camera
+        camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight);
+        camera.position.z = 1000;
+        //scene
+        scene = new THREE.Scene();
+        //renderer
+        renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+        //set the size of the renderer
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        //add the renderer to the html document body
+        document.body.appendChild( renderer.domElement );
+      }
+
+      let group = new THREE.Group();
+
+      function addSphere(){
+        let geo = new THREE.BoxGeometry(25, 25, 25);
+        let material = new THREE.MeshNormalMaterial();
+
+        for ( var i = 0; i < 10000; i ++ ) {
+
+          let mesh = new THREE.Mesh(geo, material);
+          mesh.applyMatrix(new THREE.Matrix4().makeTranslation(Math.random() * 1000 - 500, Math.random() * 1000 - 500, 0));
+
+          let g = new THREE.Group();
+          g.add(mesh);
+          g.rotateX(Math.random() * 1)
+          g.rotateY(Math.random() * 1)
+
+          group.add(g);
+        }
+        scene.add(group);
+      }
+
+      function animate() {
+        group.rotation.y += 0.005;
+        group.rotation.z += 0.005;
+      }
+      function render() {
+        stats.begin();
+        //get the frame
+        requestAnimationFrame( render );
+        animate()
+        //render the scene
+        renderer.render( scene, camera );
+        stats.end();
+      }
+      init();
+      addSphere();
+      render();
+
+    </script>
+  </body>
+</html>
